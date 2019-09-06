@@ -10,6 +10,10 @@ import sys
 import time
 import threading
 
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
 COMPILED_EXT_RE = re.compile(r'py[co]$')
 
 
@@ -67,6 +71,8 @@ if sys.platform.startswith('linux'):
 
 if has_inotify:
 
+    LOGGER.info("---- HAS INOTIFY")
+    
     class InotifyReloader(threading.Thread):
         event_mask = (inotify.constants.IN_CREATE | inotify.constants.IN_DELETE
                       | inotify.constants.IN_DELETE_SELF | inotify.constants.IN_MODIFY
@@ -106,6 +112,7 @@ if has_inotify:
 
             for dirname in self._dirs:
                 self._watcher.add_watch(dirname, mask=self.event_mask)
+                LOGGER.info(f"---- WATCH: {dirname}")
 
             for event in self._watcher.event_gen():
                 if event is None:

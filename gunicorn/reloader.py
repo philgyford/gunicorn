@@ -10,12 +10,10 @@ import sys
 import time
 import threading
 
-import logging
-
-LOGGER = logging.getLogger(__name__)
 
 COMPILED_EXT_RE = re.compile(r'py[co]$')
 
+print("---- RELOADER")
 
 class Reloader(threading.Thread):
     def __init__(self, extra_files=None, interval=1, callback=None):
@@ -71,7 +69,7 @@ if sys.platform.startswith('linux'):
 
 if has_inotify:
 
-    LOGGER.info("---- HAS INOTIFY")
+    print("---- HAS INOTIFY")
     
     class InotifyReloader(threading.Thread):
         event_mask = (inotify.constants.IN_CREATE | inotify.constants.IN_DELETE
@@ -112,7 +110,7 @@ if has_inotify:
 
             for dirname in self._dirs:
                 self._watcher.add_watch(dirname, mask=self.event_mask)
-                LOGGER.info(f"---- WATCH: {dirname}")
+                print(f"---- WATCH: {dirname}")
 
             for event in self._watcher.event_gen():
                 if event is None:
@@ -123,6 +121,7 @@ if has_inotify:
                 self._callback(filename)
 
 else:
+    print("---- DOES NOT HAVE INOTIFY")
 
     class InotifyReloader(object):
         def __init__(self, callback=None):
